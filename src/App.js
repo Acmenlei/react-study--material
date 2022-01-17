@@ -1,39 +1,75 @@
-import React from 'react';
-import PropTypes from "prop-types"
+import React, { Component } from 'react';
 
-class App extends React.Component {
-  /**
-   * 作用：定义props的默认值
-   * 该方式等同于下面的写法：
-   * App.defaultProps = { name: 'coderlei' }
-   */
-  static defaultProps = {
-    name: 'coderlei'
+function Profile() {
+  return (
+    <div>
+      <ProfileHeader />
+    </div>
+  )
+}
+
+/**
+ * 1. createContext接收一个默认值
+ * 2. context对象拥有一个Provider组件 value属性用来设置需要共享的数据
+ */
+const UserContext = React.createContext({ nickname: 'coder', age: 20 })
+/*
+ * 1. 类组件的context使用方式
+class ProfileHeader extends Component {
+  // 关键一步指定Context对象 这样才能拿到context共享的值
+  static contextType = UserContext
+  render() {
+    const { nickname, age } = this.context
+    return (
+      <>
+        <p>{nickname}</p>
+        <p>{age}</p>
+      </>
+    )
   }
-  // 对props的属性进行约束
-  static propTypes = {
-    name: PropTypes.string.isRequired
+}
+*/
+// 2. 函数组件的context使用方式 使用Consumer（消费者）组件进行包裹
+function ProfileHeader() {
+  return (
+    <UserContext.Consumer>
+      {
+        // 这里的value就是Provider所共享的value
+        (value) => {
+          return (
+            <>
+              <p>{value.age}</p>
+              <p>{value.nickname}</p>
+            </>
+          )
+        }
+      }
+    </UserContext.Consumer>
+  )
+}
+class App extends React.Component {
+  constructor(props) {
+    super(props);
+
+    this.state = {
+      nickname: "coderlei",
+      age: 22
+    }
   }
   render() {
-    // 1. props是在父类定义的 但是挂载还是挂载到了子类上
-    // 2. 构造函数默认就执行了super(props) 如果在构造函数中没有别的操作 可以省略构造函数的声明
-    const { name } = this.props
     return (
-      <div className="App">
-        <h2>{name}</h2>
-      </div>
-    );
+      // 使用context对象的Provider组件包裹父组件 并通过value共享数据
+      // 后续子孙组件都能获取到共享的value的值
+      // 如果将父组件放置到外部 那么子孙组件向上查找就会查找不到Provider 那么就会取默认值
+      // 而且Provider是可以嵌套使用的 在使用多个context的情况下 但是这种代码看起来非常冗余 且丑
+      <>
+        <UserContext.Provider value={this.state}>
+          <Profile />
+        </UserContext.Provider>
+      </>
+
+    )
   }
-  // 组件卸载前执行的钩子
-  componentWillUnmount() { }
-  // 组件挂载后执行的钩子
-  componentDidMount() { }
-  // 组件更新后执行的钩子
-  componentDidUpdate() { }
-  // 决定render函数是否需要重新渲染
-  shouldComponentUpdate() { }
-  // 获取更新前的数据(快照)
-  getSnapshotBeforeUpdate() { }
 }
 
 export default App;

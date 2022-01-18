@@ -1,6 +1,6 @@
 import React from 'react';
 import ReactDOM from 'react-dom';
-import App from './声明周期劫持';
+import App from './portals使用';
 import reportWebVitals from './reportWebVitals';
 
 ReactDOM.render(

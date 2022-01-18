@@ -22,25 +22,45 @@ class App extends PureComponent {
     super(props)
 
     this.state = {
-      counter: 1
+      counter: 1,
+      message: "start Message"
     }
   }
   render() {
     console.log("执行App渲染函数")
-    const { counter } = this.state
+    const { counter, message } = this.state
     return (
       <>
         <MemoHeader />
+        <p>{message}</p>
         <p>{counter}</p>
         <button onClick={() => this.increament()}>counter++</button>
       </>
     )
   }
   increament() {
-    // 保持数据的不可变性
+    /**
+     * setState的异步执行机制 react最终会将多个setState的操作进行合并 通过Object.assign进行合并
+     * 也就是添加进队列Queue 最终去更新这个队列 源码中通过do while 去做的
+     * 在执行队列的过程中 每次获取的都是最开始的state，将setState中传入的对象与旧的state对象进行合并产生新的对象
+     * **如果setState传入的是一个对象** 那么更新队列每次获取的都是最开始的state中的数据进行assign合并
+     */
     this.setState({
       counter: this.state.counter + 1
     })
+    this.setState({
+      message: "change Message"
+    })
+    // 如果传入的state是一个一个函数，那更新队列每次就可以拿到最新的preState以及props进行计算
+    // 之后再进行合并
+    this.setState((preState, nextProps) => ({
+      counter: preState.counter + 1
+    }))
+    this.setState((preState, nextProps) => ({
+      counter: preState.counter + 1
+    }))
+    // 执行完队列中的setState，将最终得到的State对象重新赋值给state，然后去调用render函数
+    // 总结：最终只执行了一次render函数 这也就是异步更新的好处
   }
 }
 

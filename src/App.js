@@ -1,74 +1,46 @@
-import React, { Component } from 'react';
-
-function Profile() {
-  return (
-    <div>
-      <ProfileHeader />
-    </div>
-  )
-}
-
+import React, { PureComponent, memo } from 'react';
 /**
- * 1. createContext接收一个默认值
- * 2. context对象拥有一个Provider组件 value属性用来设置需要共享的数据
+ * 处理函数组件的性能优化
+ * 内部对newProps与oldProps进行浅比较 最终决定是否重新构建JSX树
  */
-const UserContext = React.createContext({ nickname: 'coder', age: 20 })
-/*
- * 1. 类组件的context使用方式
-class ProfileHeader extends Component {
-  // 关键一步指定Context对象 这样才能拿到context共享的值
-  static contextType = UserContext
-  render() {
-    const { nickname, age } = this.context
+const MemoHeader = memo(
+  function Header() {
+    console.log("Header执行渲染函数")
     return (
-      <>
-        <p>{nickname}</p>
-        <p>{age}</p>
-      </>
+      <div>
+        我是头部Header组件
+      </div>
     )
-  }
-}
-*/
-// 2. 函数组件的context使用方式 使用Consumer（消费者）组件进行包裹
-function ProfileHeader() {
-  return (
-    <UserContext.Consumer>
-      {
-        // 这里的value就是Provider所共享的value
-        (value) => {
-          return (
-            <>
-              <p>{value.age}</p>
-              <p>{value.nickname}</p>
-            </>
-          )
-        }
-      }
-    </UserContext.Consumer>
-  )
-}
-class App extends React.Component {
+  })
+/**
+ * PureComponent类用于处理类组件的性能优化
+ * 内部对newProps与oldProps、newState与oldState进行浅比较（执行shallowEqual函数）
+ * 由比较结果来决定是否重新执行render函数 达到性能优化的目的
+ */
+class App extends PureComponent {
   constructor(props) {
-    super(props);
+    super(props)
 
     this.state = {
-      nickname: "coderlei",
-      age: 22
+      counter: 1
     }
   }
   render() {
+    console.log("执行App渲染函数")
+    const { counter } = this.state
     return (
-      // 使用context对象的Provider组件包裹父组件 并通过value共享数据
-      // 后续子孙组件都能获取到共享的value的值
-      // 如果将父组件放置到外部 那么子孙组件向上查找就会查找不到Provider 那么就会取默认值
-      // 而且Provider是可以嵌套使用的 在使用多个context的情况下 但是这种代码看起来非常冗余 且丑
       <>
-        <UserContext.Provider value={this.state}>
-          <Profile />
-        </UserContext.Provider>
+        <MemoHeader />
+        <p>{counter}</p>
+        <button onClick={() => this.increament()}>counter++</button>
       </>
-
     )
+  }
+  increament() {
+    // 保持数据的不可变性
+    this.setState({
+      counter: this.state.counter + 1
+    })
   }
 }
 

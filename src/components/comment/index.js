@@ -13,11 +13,12 @@ export default class CommentList extends PureComponent {
                 {
                     commentsList.map((item, index) => {
                         const { username, avatar, dateTime, content, id } = item
+                        // 必须添加唯一的key 因为在删除item的时候需要对item做移除动画
                         return <CSSTransition
                                             timeout={300}
                                             unmountOnExit
                                             classNames="comment-item"
-                                            key={index}>
+                                            key={id}> 
                             <Comment
                                     key={id}
                                     actions={[<span onClick={this.deleteCommentItem.bind(this, index)}>删除</span>]}

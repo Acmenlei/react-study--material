@@ -1,10 +1,13 @@
-import React, { PureComponent } from 'react';
-import Test from '@/pages/Test';
+import React from 'react';
+import { Link, useRoutes } from 'react-router-dom';
+import routes from "@/router"
 
-export default class App extends PureComponent {
-  render() {
-    return <div>
-        <Test/>
-    </div>;
-  }
+// 在react-router-dom 6.0 之后 就不需要react-router-config来生成路由了
+// 官方给出了hooks useRoutes来动态生成路由
+export default function App() {
+  return <div>
+    <Link to="/">首页</Link>
+    <Link to="/test">test</Link>
+    {useRoutes(routes)}
+  </div>;
 }

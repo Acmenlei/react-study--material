@@ -1,13 +1,33 @@
-import React from 'react';
-import { Link, useRoutes } from 'react-router-dom';
-import routes from "@/router"
+import React, { createContext, useState } from "react"
+import Test from "./examples/test"
+import Counter from './examples/counter'
+import EffectHook from "./examples/useEffectHook"
+import ContextHook from "./examples/useContextHook"
+import CallbackHook from "./examples/useCallbackHook"
+import MemoHook from "./examples/useMemoHook"
 
-// 在react-router-dom 6.0 之后 就不需要react-router-config来生成路由了
-// 官方给出了hooks useRoutes来动态生成路由
-export default function App() {
-  return <div>
-    <Link to="/">首页</Link>
-    <Link to="/test">test</Link>
-    {useRoutes(routes)}
-  </div>;
+export const UserContext = createContext()
+
+function App() {
+  const [show, setShow] = useState(true)
+  return (
+    <>
+      <Test />
+      <hr />
+      {show && <Counter />}
+      <button onClick={() => setShow(!show)}>取反</button>
+      <hr />
+      <EffectHook />
+      <hr />
+      <UserContext.Provider value={{ name: 'coderlei', age: 19 }}>
+        <ContextHook />
+      </UserContext.Provider>
+      <hr />
+      <CallbackHook />
+      <hr />
+      <MemoHook />
+    </>
+  )
 }
+
+export default App
